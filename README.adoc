@@ -1,2 +1,3 @@
-# obazl_hello
+= obazl_hello
 Minimal working example
+

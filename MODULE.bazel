@@ -1,0 +1,48 @@
+module(
+    name = "obazl_hello",
+    version = "0.1.0",
+    compatibility_level = 0,
+)
+
+bazel_dep(name = "rules_ocaml", version = "5.0.0")
+git_override(module_name = "rules_ocaml",
+             branch  = "5.0.0.alpha",
+             remote = "https://github.com/obazl/rules_ocaml.git")
+
+bazel_dep(name = "tools_opam", version = "1.0.0")
+git_override(module_name = "tools_opam",
+             branch  = "1.0.0.alpha",
+             remote = "https://github.com/obazl/tools_opam.git")
+
+opam = use_extension("@tools_opam//extensions:opam.bzl", "opam")
+opam.deps(
+    ocaml_version = "5.3.0",
+    opam_version = "2.3.0",
+    toolchain = "local",  # default; or "global" | "xdg"
+    # verbosity = 1,
+    # debug = 1,
+    pkgs = {"ounit2": "2.2.7"},
+)
+use_repo(opam, "opam.ocamlsdk")
+## always register toolchains:
+register_toolchains("@opam.ocamlsdk//toolchain/selectors/local:all")
+register_toolchains("@opam.ocamlsdk//toolchain/profiles:all")
+
+# direct deps:
+use_repo(opam, "opam.ounit2")
+## if you prefer to use non-prefixed pkg names in this module,
+## or a different name altogether,
+## e.g. @ounit2 or @foobar instead of @opam.ounit2,
+## then this syntax will configure the aliasing within
+## the scope of this module:
+#use_repo(opam, ounit2 = "opam.ounit2")
+## in the following case your build files would have
+## to use @foobar instead of @opam.ounit2
+# use_repo(opam, foobar = "opam.ounit2")
+
+## IOW, the Bazel repos always use the "opam." prefix,
+## yielding e.g. tools_opam++opam+opam.ounit2
+## but you can use any alias within your module
+## to refer to them. E.g. given
+## use_repo(opam, ounit2 = "opam.ounit2")
+## then @ounit2 will resolve to tools_opam++opam+opam.ounit2.
