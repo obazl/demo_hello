@@ -5,7 +5,7 @@ load(
 )
 
 ocaml_test(
-    name = "hello_test",
+    name = "test",
     main = "Test",
     opts = [
         # "-verbose",
