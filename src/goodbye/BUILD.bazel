@@ -7,10 +7,6 @@ load(
 ocaml_test(
     name = "test",
     main = "Test",
-    opts = [
-        # "-verbose",
-        # "-ccopt", "-Wl,-v"
-    ],
     timeout = "short"
 )
 

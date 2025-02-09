@@ -7,10 +7,6 @@ load(
 ocaml_test(
     name = "test",
     main = "Test",
-    opts = [
-        # "-verbose",
-        # "-ccopt", "-Wl,-v"
-    ],
     timeout = "short"
 )
 
@@ -26,18 +22,4 @@ ocaml_module(
 ocaml_module(
     name = "Hello",
     struct = "hello.ml",
-    ## for testing opam extension:
-    # deps = ["@opam.ppx_expect//lib/ppx_expect",
-    #         "@opam.base//lib/base"],
-    # data = ["@opam.menhir//bin:menhir"],
-    opts = [
-        # "-opaque"
-        # "-dlocations",
-        # "-dsource",
-        # "-dparsetree",
-        # "-dshape",
-        # "-dtypedtree",
-        # "-dlambda",
-        # "-dclambda",
-    ],
 )
