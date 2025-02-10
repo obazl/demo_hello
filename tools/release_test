@@ -3,23 +3,22 @@
 VERBOSE=
 V=
 ANNOUNCE=
-QUIET="--ui_event_filters=-DEBUG"
-QUIET_STARTUP=
+QUIET="--noshow_loading_progress \
+       --noshow_progress \
+       --show_result 0 \
+       --ui_event_filters=-INFO,-DEBUG"
+
+QUIET_STARTUP="--quiet"
+
 TARGET="//... --build_tests_only"
 
-
-while getopts "qvt:" arg; do
+while getopts "vt:" arg; do
   case $arg in
-      q)
-          QUIT_STARTUP="--quiet"
-          QUIET="--noshow_loading_progress \
-          --noshow_progress \
-          --show_result 0 \
-          --ui_event_filters=-INFO"
-          ;;
       v)
           V=1
           ANNOUNCE="--announce_rc"
+          QUIET=
+          QUIET_STARTUP=
           VERBOSE="--color=yes --subcommands=pretty_print"
           ;;
       t)
@@ -39,6 +38,7 @@ STARTUP_PARAMS="--ignore_all_rc_files ${QUIET_STARTUP}"
 
 
 PARAMS="${ANNOUNCE} \
+    --lockfile_mode=off \
     --symlink_prefix=.bazel/ \
     --repository_cache= \
     --nokeep_state_after_build \
@@ -51,7 +51,7 @@ if [[ $V -eq 1 ]]; then
 fi
 
 bazel --quiet clean --expunge --ui_event_filters=-INFO
-printf "%s" "Toolchain: ocamlopt.opt (sys>sys)... "
+printf "%s\n" "Toolchain: ocamlopt.opt (sys>sys)"
 if [ -z ${QUIET_STARTUP:+x} ]; then
     echo ""
 fi
@@ -61,13 +61,13 @@ bazel ${STARTUP_PARAMS} \
       $VERBOSE
 return_code=$?
 if [ $return_code -eq 0 ]; then
-  echo "OK"
+  echo ""
 else
   echo "bazel test with exit code: $return_code"
 fi
 
 bazel clean --expunge --ui_event_filters=-INFO
-printf "%s" "Toolchain: ocamlc.byte (vm>vm)... "
+printf "%s\n" "Toolchain: ocamlc.byte (vm>vm)"
 if [ -z ${QUIET_STARTUP:+x} ]; then
     echo ""
 fi
@@ -78,13 +78,13 @@ bazel ${STARTUP_PARAMS} \
       --host_platform=@rules_ocaml//platform:ocamlc.byte
 return_code=$?
 if [ $return_code -eq 0 ]; then
-  echo "OK"
+  echo ""
 else
   echo "bazel test with exit code: $return_code"
 fi
 
 bazel clean --expunge --ui_event_filters=-INFO
-printf "%s" "Toolchain: ocamlc.opt (sys>vm)... "
+printf "%s\n" "Toolchain: ocamlc.opt (sys>vm)"
 if [ -z ${QUIET_STARTUP:+x} ]; then
     echo ""
 fi
@@ -96,13 +96,13 @@ bazel ${STARTUP_PARAMS} \
       --platforms=@rules_ocaml//platform:ocamlc.byte
 return_code=$?
 if [ $return_code -eq 0 ]; then
-  echo "OK"
+  echo ""
 else
   echo "bazel test with exit code: $return_code"
 fi
 
 bazel clean --expunge --ui_event_filters=-INFO
-printf "%s" "Toolchain: ocamlopt.byte (vm>sys)... "
+printf "%s\n" "Toolchain: ocamlopt.byte (vm>sys)"
 if [ -z ${QUIET_STARTUP:+x} ]; then
     echo ""
 fi
@@ -115,7 +115,7 @@ bazel ${STARTUP_PARAMS} \
 
 return_code=$?
 if [ $return_code -eq 0 ]; then
-  echo "OK"
+  echo ""
 else
   echo "bazel test with exit code: $return_code"
 fi

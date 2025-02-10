@@ -1,6 +1,7 @@
-# toolchain selection: --config=ocaml<x>.<y>
+# To select a toolchain add this to the command line:
+#    --config=ocaml<x>.<y>
 # E.g. to compile with ocamlc.opt, pass
-#   --config=ocamlc.opt (sys>vm).
+#   --config=ocamlc.opt
 
 ## To set a default, put one of these in ./config/user.bazelrc:
 

@@ -37,3 +37,36 @@ toolchain strategies, `local`, `global`, and `xdg`. See
 link:https://github.com/obazl/tools_opam[tools_opam] for more
 information and instructions on how to use them.
 
+== Exercising the OCaml compilers
+
+The standard OCaml distribution comes with four basic compilers
+(`+ocamlopt.opt`, `+ocamlc.byte+`, `+ocamlopt.byte`, and
+`+ocamlc.opt`) plus a profiling frontend (`+ocamlcp+`). Furthermore,
+the compilers may be configured in a variety of ways: with a
+`+debug-runtime+`, or the flambda optimizer, and so forth.
+
+The OBazl rules (`+rules_ocaml+`) support the four basic compilers out
+of the box. In this demo you can see how they are configured in
+link:.config/toolchains.bazelrc[./config/toolchains.bazelrc]. To select one, pass `--config=<compiler>` on the command line; e.g.
+
+    $ bazel build src/hello:test --config=ocamlc.byte
+
+WARNING: The implementation and syntax of this feature will change in
+the near future, but the concept will remain the same.
+
+By default, Bazel reads a variety of `+bazelrc+` files, such as
+`+$HOME/.bazelrc+` and `+<projroot>/.bazelrc+`. (See
+link:https://bazel.build/run/bazelrc[Write bazelrc configuration
+files] for more information.) This may induce a dependency on the
+local system, so to prepare a project for release you need to build
+and test everything without depending on such files. That is the
+purpose of such start-up options as `+--nohome_rc+`,
+`+--nosystem_rc+`, etc. (Run `$ bazel startup_options help` to see a
+list of all startup options.)
+
+As an example of one way to do this, see link:tools/release_build[tools/release_build] and link:tools/release_test[tools/release_test].
+
+Note that:
+
+* `+$ bazel test //...+` will build all targets and run all tests
+* `+$ bazel test //... --build_tests_only+` will run all tests but only build targets required by the tests
