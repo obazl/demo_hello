@@ -4,28 +4,21 @@ module(
     compatibility_level = 0,
 )
 
-bazel_dep(name = "rules_ocaml", version = "5.0.0")
-git_override(module_name = "rules_ocaml",
-             branch  = "5.0.0.alpha",
-             remote = "https://github.com/obazl/rules_ocaml.git")
-
-bazel_dep(name = "tools_opam", version = "1.0.0")
-git_override(module_name = "tools_opam",
-             branch  = "1.0.0.alpha",
-             remote = "https://github.com/obazl/tools_opam.git")
+bazel_dep(name = "rules_ocaml", version = "3.0.0.dev")
+bazel_dep(name = "tools_opam", version = "1.0.0.dev")
 
 opam = use_extension("@tools_opam//extensions:opam.bzl", "opam")
 opam.deps(
-    toolchain = "local",  # | "global" | "xdg"
+    # toolchain = "xdg", # (default) | "local" | "global"
     # opam_version is ignored unless toolchain = "xdg"
-    opam_version = "2.3.0", # "2.0.10", "2.2.1", etc.
-    ocaml_version = "5.3.0",
-    # debug = 0,
-    # verbosity = 1,
-    # opam_verbosity = 0,
+    # opam_version = "2.2.1", # default: "2.3.0"
+    # ocaml_version = "5.1.0", # default: "5.3.0"
+    # debug = 2,
+    # verbosity = 2,
+    # opam_verbosity = 2,
     pkgs = {"ounit2": "2.2.7"}
 )
-use_repo(opam, "opam.ocamlsdk")
+use_repo(opam, "opam", "opam.ocamlsdk")
 ## always register toolchains:
 register_toolchains("@opam.ocamlsdk//toolchain/selectors/local:all")
 register_toolchains("@opam.ocamlsdk//toolchain/profiles:all")

@@ -1,18 +1,17 @@
-= obazl_hello
+= demo_hello
 :toc: true
 
-A Minimal Working Example demonstrating the use of
-
-* link:https://github.com/obazl/rules_ocaml[rules_ocaml]
-* link:https://github.com/obazl/tools_opam[tools_opam]
+A Minimal Working Example demonstrating the use of link:https://github.com/obazl/rules_ocaml[rules_ocaml] and link:https://github.com/obazl/tools_opam[tools_opam].
 
 == Getting started
 
-link:https://bazel.build/install[Install Bazel].  Then:
+link:https://bazel.build/install[Install Bazel,window=_blank].  Then:
 
-    git clone https://github.com/obazl/obazl_hello.git
-    cd obazl_hello
-    bazel test //... --build_tests_only
+    git clone https://github.com/obazl/demo_hello.git
+    cd demo_hello
+    bazel run bin:hello
+    bazel test test
+    bazel build //...    #  builds all targets
 
 You'll see some messages the first time you build, while the extension configures a local opam switch; for example:
 
@@ -20,17 +19,10 @@ You'll see some messages the first time you build, while the extension configure
      Fetching ... @@tools_opam+//extensions:opam.bzl%opam; Creating local switch for compiler 5.3.0 at /path/to/obazl_hello 54s
     Fetching module extension @@tools_opam+//extensions:opam.bzl%opam; Installing pkg ounit2 (0 of 1) 15s
 
-You can run the tests individually:
+You can build targets individually:
 
-    bazel test src/hello:test
-    bazel test src/goodbye:test
-
-NOTE: This is an alpha version. There is still some flakiness in some
-situations involving opam commands (like creating a switch) that I
-haven't worked out. If you see error messages, try running the build
-again. You may need to run `bazel clean --expunge`. Once your switch
-is properly configured (which you can do manually if you prefer), you
-should not see such errors.  If you do, please file an issue.
+    bazel test lib/hello:Hello
+    bazel test lib/goodbye:Goodbye
 
 The `tools_opam` module extension `opam` supports three different
 toolchain strategies, `local`, `global`, and `xdg`. See
@@ -46,13 +38,21 @@ the compilers may be configured in a variety of ways: with a
 `+debug-runtime+`, or the flambda optimizer, and so forth.
 
 The OBazl rules (`+rules_ocaml+`) support the four basic compilers out
-of the box. In this demo you can see how they are configured in
-link:.config/toolchains.bazelrc[./config/toolchains.bazelrc]. To select one, pass `--config=<compiler>` on the command line; e.g.
+of the box. You can choose one by passing
+`--@rules_ocaml//toolchain=<tc>`, where `<tc>` is one of `ocamlopt`,
+`ocamlopt.opt`, `ocamlc`, `ocamlc.byte`, `ocamlopt.byte`, and
+`ocamlc.opt`.  For example,
 
-    $ bazel build src/hello:test --config=ocamlc.byte
+    $ bazel test test --@rules_ocaml//toolchain=ocamlc
 
-WARNING: The implementation and syntax of this feature will change in
-the near future, but the concept will remain the same.
+You can shorten this by defining a flag alias. Put this in a bazelrc
+file (see link:.bazelrc)
+
+    common --flag_alias=tc=@rules_ocaml//toolchain
+
+Then you can run:
+
+    $ bazel test test --tc=ocamlc
 
 By default, Bazel reads a variety of `+bazelrc+` files, such as
 `+$HOME/.bazelrc+` and `+<projroot>/.bazelrc+`. (See

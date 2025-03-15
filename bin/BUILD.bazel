@@ -1,0 +1,19 @@
+load(
+    "@rules_ocaml//build:rules.bzl",
+    "ocaml_binary",
+    "ocaml_module",
+)
+
+ocaml_binary(
+    name     = "hello",
+    main     = ":Main",
+)
+
+
+
+ocaml_module(
+    name   = "Main",
+    struct = "main.ml",
+    deps   = ["//lib/hello:Hello",
+              "//lib/goodbye:Goodbye"]
+)

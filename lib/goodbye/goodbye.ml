@@ -1,4 +1,4 @@
-let () = print_endline "Goodbye from hello!"
+let () = print_endline "Goodbye from goodbye!"
 
 let msg = "Goodbye"
 
