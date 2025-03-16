@@ -1,47 +1,81 @@
 = demo_hello
 :toc: true
 
-A Minimal Working Example demonstrating the use of link:https://github.com/obazl/rules_ocaml[rules_ocaml] and link:https://github.com/obazl/tools_opam[tools_opam].
+A Minimal Working Example demonstrating the use of link:https://github.com/obazl/rules_ocaml[rules_ocaml,window=_blank] and link:https://github.com/obazl/tools_opam[tools_opam,window=_blank].
 
 == Getting started
 
 link:https://bazel.build/install[Install Bazel,window=_blank].  Then:
 
-    git clone https://github.com/obazl/demo_hello.git
-    cd demo_hello
-    bazel run bin:hello
-    bazel test test
-    bazel build //...    #  builds all targets
-
-You'll see some messages the first time you build, while the extension configures a local opam switch; for example:
-
-     Fetching module extension @@tools_opam+//extensions:opam.bzl%opam; Building @tools_opam//extensions/config
-     Fetching ... @@tools_opam+//extensions:opam.bzl%opam; Creating local switch for compiler 5.3.0 at /path/to/obazl_hello 54s
-    Fetching module extension @@tools_opam+//extensions:opam.bzl%opam; Installing pkg ounit2 (0 of 1) 15s
+----
+it clone https://github.com/obazl/demo_hello.git
+cd demo_hello
+bazel run bin:hello
+bazel test test
+bazel build //...                         <1>
+bazel test //...                          <2>
+bazel test //... --build_tests_only       <3>
+----
+<1>  Builds all targets
+<2>  Builds all targets and runs all tests
+<3>  Runs all tests but only builds targets required by the tests
 
 You can build targets individually:
 
     bazel test lib/hello:Hello
     bazel test lib/goodbye:Goodbye
 
-The `tools_opam` module extension `opam` supports three different
-toolchain strategies, `local`, `global`, and `xdg`. See
+For more information on targets, see https://bazel.build/run/build#bazel-build[Building one target] and https://bazel.build/run/build#specifying-build-targets[Building multiple targets].
+
+You'll see some messages the first time you build, while the extension configures a local opam switch; for example:
+
+     Fetching module extension @@tools_opam+//extensions:opam.bzl%opam; Building @tools_opam//extensions/config
+     Fetching ... @@tools_opam+//extensions:opam.bzl%opam; Creating local switch for compiler 5.3.0 at /path/to/obazl_hello 54s
+    Fetching module extension @@tools_opam+//extensions:opam.bzl%opam; Installing pkg ounit2 (1 of 1) 15s
+
+By default, OBazl will create a new switch in your `XDG_DATA_HOME`
+directory (default: `$HOME/.local/share`) and install your
+dependencies (in this demo, just `ounit2`). This takes a relatively
+long time, but it should only happen once. You also have the option of
+using a global or local switch; see link:MODULE.bazel[MODULE.bazel] in
+this demo, and see
 link:https://github.com/obazl/tools_opam[tools_opam] for more
 information and instructions on how to use them.
+
+== Inspectability
+
+To see the commands generated, add `--subcommands=pretty_print`, or
+put the following in your bazelrc file:
+
+    build:showpp --subcommands=pretty_print
+
+Then you can pass `--config=showpp`.  Alternatively, run:
+
+    $ bazel aquery //<pkg>:<tgt>
+
+E.g. `$ bazel aquery //lib/hello:Hello` This will show you the command
+line Bazel constructs, without actually running it.
+
+Bazel also logs all commands. To print the location of the log file:
+`bazel info command_log`. The command log is overwritten by each
+succeeding command (including `bazel info`), so you need to store the
+path somehow. A simple way to do that is to create a shell alias; see
+link:tools/source.me[tools/source.me] as an example.
 
 == Exercising the OCaml compilers
 
 The standard OCaml distribution comes with four basic compilers
-(`+ocamlopt.opt`, `+ocamlc.byte+`, `+ocamlopt.byte`, and
-`+ocamlc.opt`) plus a profiling frontend (`+ocamlcp+`). Furthermore,
+(`ocamlopt.opt`, `ocamlc.byte`, `ocamlopt.byte`, and
+`ocamlc.opt`) plus a profiling frontend (`ocamlcp`). Furthermore,
 the compilers may be configured in a variety of ways: with a
 `+debug-runtime+`, or the flambda optimizer, and so forth.
 
 The OBazl rules (`+rules_ocaml+`) support the four basic compilers out
 of the box. You can choose one by passing
-`--@rules_ocaml//toolchain=<tc>`, where `<tc>` is one of `ocamlopt`,
-`ocamlopt.opt`, `ocamlc`, `ocamlc.byte`, `ocamlopt.byte`, and
-`ocamlc.opt`.  For example,
+`--@rules_ocaml//toolchain=<tc>`, where `<tc>` is one of
+`ocamlopt.opt`, `ocamlopt` (=`ocamlopt.opt`), `ocamlc.opt`, `ocamlc`
+(=`ocamlc.opt`), `ocamlc.byte`, and `ocamlopt.byte`. For
+example,
 
     $ bazel test test --@rules_ocaml//toolchain=ocamlc
 
@@ -65,8 +99,3 @@ purpose of such start-up options as `+--nohome_rc+`,
 list of all startup options.)
 
 As an example of one way to do this, see link:tools/release_build[tools/release_build] and link:tools/release_test[tools/release_test].
-
-Note that:
-
-* `+$ bazel test //...+` will build all targets and run all tests
-* `+$ bazel test //... --build_tests_only+` will run all tests but only build targets required by the tests
