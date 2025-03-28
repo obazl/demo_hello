@@ -5,20 +5,54 @@ A Minimal Working Example demonstrating the use of link:https://github.com/obazl
 
 == Getting started
 
-link:https://bazel.build/install[Install Bazel,window=_blank].  Then:
+link:https://bazel.build/install[Install Bazel,window=_blank], minimum version 8.0.0.  Then:
+
+.demo_hello
+[%collapsible%open]
+====
+----
+$ git clone https://github.com/obazl/demo_hello.git
+$ cd demo_hello
+$ bazel run bin:greetings
+$ bazel run bin:greetings --tc=ocamlc              <0>
+$ bazel test test
+$ bazel run @opam                                  <1>
+$ bazel clean                                      <2>
+$ bazel build //...                                <3>
+$ bazel test //...                                 <4>
+$ bazel test //... --build_tests_only              <5>
+
+$ bazel build lib/hello:Hello --config=modinfo     <6>
+$ bazel build lib/hello:Hello --config=modinfo --tc=ocamlc
+$ bazel build lib/hello:Hello --config=siginfo     <7>
+$ bazel build lib/hello:Hello --config=cmtinfo     <8>
+$ bazel build lib/hello:Hello --config=cmtiinfo    <9>
+$ bazel build lib/goodbye:Goodbye --config=gensig  <10>
+
+$ bazel run @ocaml
+$ bazel run @utop
+$ bazel run @dbg --pgm=bin:greetings               <11>
+
+$ dune build                                       <12>
+$ dune run bin/main.exe                            <13>
+$ dune test
 
 ----
-it clone https://github.com/obazl/demo_hello.git
-cd demo_hello
-bazel run bin:hello
-bazel test test
-bazel build //...                         <1>
-bazel test //...                          <2>
-bazel test //... --build_tests_only       <3>
-----
-<1>  Builds all targets
-<2>  Builds all targets and runs all tests
-<3>  Runs all tests but only builds targets required by the tests
+<0> Uses `ocamlc.opt` compiler.  `--tc=<compiler>` can be used with all cmds here.
+<1> Runs opam; shows location of switch.
+<2>  Forces rebuild. Rarely needed in practice.
+<3>  Builds all targets
+<4>  Builds all targets and runs all tests
+<5>  Runs all tests but only builds targets required by the tests
+<6> Runs `ocamlobjinfo` against hello.cmx (see .bazelrc)
+<7> Runs `ocamlobjinfo` against hello.cmi (see .bazelrc)
+<8> Runs `ocamlcmt` against hello.cmt (see .bazelrc)
+<9> Runs `ocamlcmt` against hello.cmti (see .bazelrc)
+<10> Generate interface for goodbye.ml (`ocamlc -i`) (see .bazelrc)
+<11> Runs `ocamldebug`. See .bazelrc
+<12> Dune and Bazel play nice together.
+<13> Dune requires that the executable name match a module name.
+====
 
 You can build targets individually:
 
@@ -42,7 +76,7 @@ this demo, and see
 link:https://github.com/obazl/tools_opam[tools_opam] for more
 information and instructions on how to use them.
 
-== Inspectability
+== Observability
 
 To see the commands generated, add `--subcommands=pretty_print`, or
 put the following in your bazelrc file:
@@ -80,7 +114,7 @@ example,
     $ bazel test test --@rules_ocaml//toolchain=ocamlc
 
 You can shorten this by defining a flag alias. Put this in a bazelrc
-file (see link:.bazelrc)
+file (see link:.bazelrc[.bazelrc])
 
     common --flag_alias=tc=@rules_ocaml//toolchain
 

@@ -5,11 +5,9 @@ load(
 )
 
 ocaml_binary(
-    name     = "hello",
+    name     = "greetings",
     main     = ":Main",
 )
-
-
 
 ocaml_module(
     name   = "Main",

@@ -1,10 +1,4 @@
 (library
-  (package demo_hello)
   (name hello)
   (modules hello)
   )
-
-(test
- (name test)
- (modules test)
- (libraries ounit2 hello))
