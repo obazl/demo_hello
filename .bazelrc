@@ -1,3 +1,8 @@
+try-import %workspace%/.config/registries.bazelrc
+## do not remove these two lines:
+common --registry=https://raw.githubusercontent.com/obazl/registry/main/
+common --registry=https://bcr.bazel.build
+
 common --lockfile_mode=off
 
 common --flag_alias=tc=@rules_ocaml//toolchain
@@ -22,10 +27,5 @@ build:cmtinfo --output_groups=cmtinfo
 build:cmtiinfo --aspects @tools_opam//aspects:ocamlcmt.bzl%cmti
 build:cmtiinfo --output_groups=cmtinfo
 
-
-try-import %workspace%/.config/registries.bazelrc
-## do not remove these two lines:
-common --registry=https://raw.githubusercontent.com/obazl/registry/main/
-common --registry=https://bcr.bazel.build
 
 try-import %workspace%/.config/user.bazelrc
